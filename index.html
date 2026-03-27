@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aura AI — Intelligence, Reimagined</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0a0a0f;
+      --ink2: #13131f;
+      --ink3: #1c1c2e;
+      --surface: #1e1e30;
+      --edge: rgba(255, 255, 255, 0.08);
+      --glow: #7c6fff;
+      --glow2: #ff6fcb;
+      --glow3: #4fc0d0;
+      --text: #f0effe;
+      --muted: rgba(240, 239, 254, 0.5);
+      --r: 18px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ─── BACKGROUND ORBS ─── */
+    .orb-wrap {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.18;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 700px;
+      height: 700px;
+      background: var(--glow);
+      top: -200px;
+      left: -150px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--glow2);
+      bottom: -100px;
+      right: -100px;
+      animation-delay: -6s;
+    }
+
+    .orb-3 {
+      width: 400px;
+      height: 400px;
+      background: var(--glow3);
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -12s;
+    }
+
+    @keyframes drift {
+      from {
+        transform: translate(0, 0) scale(1);
+      }
+
+      to {
+        transform: translate(40px, 30px) scale(1.08);
+      }
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 60px;
+      background: rgba(10, 10, 15, 0.6);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--edge);
+      transition: padding 0.3s;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span {
+      color: var(--glow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      background: var(--glow);
+      color: #fff !important;
+      padding: 9px 22px;
+      border-radius: 50px;
+      font-weight: 600 !important;
+      font-size: 0.88rem !important;
+      transition: all 0.25s !important;
+      box-shadow: 0 0 20px rgba(124, 111, 255, 0.35);
+    }
+
+    .nav-cta:hover {
+      box-shadow: 0 0 32px rgba(124, 111, 255, 0.6) !important;
+      transform: translateY(-1px);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 60px 80px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .hero-inner {
+      max-width: 860px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124, 111, 255, 0.12);
+      border: 1px solid rgba(124, 111, 255, 0.3);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: 0.8rem;
+      color: #b3aaff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      font-weight: 600;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--glow);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.2rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    h1 .shimmer {
+      background: linear-gradient(135deg, #c4bcff 0%, var(--glow2) 50%, var(--glow3) 100%);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmerAnim 4s linear infinite;
+    }
+
+    @keyframes shimmerAnim {
+      from {
+        background-position: 200% 0;
+      }
+
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 24px auto 40px;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .btn-hero {
+      padding: 15px 36px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary-hero {
+      background: var(--glow);
+      color: #fff;
+      box-shadow: 0 0 30px rgba(124, 111, 255, 0.4);
+    }
+
+    .btn-primary-hero:hover {
+      box-shadow: 0 0 50px rgba(124, 111, 255, 0.65);
+      transform: translateY(-3px);
+    }
+
+    .btn-ghost-hero {
+      background: var(--edge);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-ghost-hero:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+    }
+
+    /* hero preview card */
+    .hero-preview {
+      margin-top: 72px;
+      border-radius: 20px;
+      border: 1px solid var(--edge);
+      background: rgba(28, 28, 46, 0.7);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      animation: fadeUp 0.8s 0.4s ease both;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(124, 111, 255, 0.1);
+    }
+
+    .preview-bar {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--edge);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .preview-dot:nth-child(1) {
+      background: #ff5f57;
+    }
+
+    .preview-dot:nth-child(2) {
+      background: #febc2e;
+    }
+
+    .preview-dot:nth-child(3) {
+      background: #28c840;
+    }
+
+    .preview-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-msg {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .preview-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .avatar-user {
+      background: var(--glow);
+    }
+
+    .avatar-ai {
+      background: linear-gradient(135deg, #4fc0d0, #7c6fff);
+    }
+
+    .preview-bubble {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--edge);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text);
+      max-width: 480px;
+      text-align: left;
+    }
+
+    .preview-bubble.user {
+      background: rgba(124, 111, 255, 0.18);
+      border-color: rgba(124, 111, 255, 0.3);
+    }
+
+    .preview-msg.user {
+      flex-direction: row-reverse;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      padding: 4px 0;
+    }
+
+    .typing-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingBounce {
+
+      0%,
+      80%,
+      100% {
+        transform: scale(0.7);
+        opacity: 0.5;
+      }
+
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ─── STATS BAND ─── */
+    .stats-band {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--edge);
+      border-bottom: 1px solid var(--edge);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 48px 60px;
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #c4bcff, var(--glow2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── FEATURES ─── */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--glow);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 520px;
+      margin-top: 14px;
+    }
+
+    .features {
+      padding: 100px 60px;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .features-header .section-sub {
+      margin: 14px auto 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feat-card {
+      background: var(--ink2);
+      border: 1px solid var(--edge);
+      border-radius: var(--r);
+      padding: 32px;
+      transition: all 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0% 0%, rgba(124, 111, 255, 0.06), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .feat-card:hover {
+      border-color: rgba(124, 111, 255, 0.35);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    .feat-card:hover::before {
+      opacity: 1;
+    }
+
+    .feat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+
+    .feat-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feat-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how {
+      padding: 100px 60px;
+      background: linear-gradient(180deg, transparent, rgba(28, 28, 46, 0.5), transparent);
+    }
+
+    .how-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 80px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .how-text {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .how-steps {
+      flex: 1;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .how-step {
+      display: flex;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--edge);
+      position: relative;
+    }
+
+    .how-step:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--glow);
+      letter-spacing: 0.05em;
+      min-width: 36px;
+      padding-top: 2px;
+    }
+
+    .step-body h4 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .step-body p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ─── PRICING ─── */
+    .pricing {
+      padding: 100px 60px;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .price-card {
+      background: var(--ink2);
+      border: 1px solid var(--edge);
+      border-radius: var(--r);
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .price-card.featured {
+      background: linear-gradient(160deg, rgba(124, 111, 255, 0.15), rgba(255, 111, 203, 0.08));
+      border-color: rgba(124, 111, 255, 0.4);
+      box-shadow: 0 0 0 1px rgba(124, 111, 255, 0.2), 0 24px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .price-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--glow);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 50px;
+    }
+
+    .price-tier {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .price-amount {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+    }
+
+    .price-amount sup {
+      font-size: 1.2rem;
+      vertical-align: top;
+      margin-top: 12px;
+    }
+
+    .price-amount span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .price-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 28px;
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex: 1;
+    }
+
+    .price-features li {
+      font-size: 0.9rem;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .price-features li::before {
+      content: '✓';
+      color: var(--glow);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .price-features li.off {
+      color: var(--muted);
+    }
+
+    .price-features li.off::before {
+      content: '–';
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-plan {
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .btn-plan-ghost {
+      background: transparent;
+      border: 1px solid var(--edge);
+      color: var(--text);
+    }
+
+    .btn-plan-ghost:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .btn-plan-solid {
+      background: var(--glow);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(124, 111, 255, 0.3);
+    }
+
+    .btn-plan-solid:hover {
+      box-shadow: 0 0 36px rgba(124, 111, 255, 0.55);
+      transform: translateY(-2px);
+    }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials {
+      padding: 100px 60px;
+    }
+
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .testi-card {
+      background: var(--ink2);
+      border: 1px solid var(--edge);
+      border-radius: var(--r);
+      padding: 28px;
+      transition: all 0.3s;
+    }
+
+    .testi-card:hover {
+      border-color: rgba(124, 111, 255, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .testi-stars {
+      color: #fbbf24;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+
+    .testi-text {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: rgba(240, 239, 254, 0.85);
+      margin-bottom: 20px;
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testi-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .testi-name {
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .testi-role {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* ─── CTA BANNER ─── */
+    .cta-banner {
+      margin: 0 60px 100px;
+      background: linear-gradient(135deg, rgba(124, 111, 255, 0.2), rgba(255, 111, 203, 0.1));
+      border: 1px solid rgba(124, 111, 255, 0.3);
+      border-radius: 24px;
+      padding: 80px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(124, 111, 255, 0.2), transparent 60%);
+    }
+
+    .cta-banner .section-heading {
+      position: relative;
+    }
+
+    .cta-banner .section-sub {
+      margin: 14px auto 36px;
+      position: relative;
+    }
+
+    .cta-banner .hero-buttons {
+      position: relative;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--edge);
+      padding: 60px 60px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand .logo {
+      font-size: 1.3rem;
+      margin-bottom: 14px;
+    }
+
+    .footer-brand p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.7;
+      max-width: 260px;
+    }
+
+    .footer-col h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      letter-spacing: 0.02em;
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--text);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--edge);
+      padding-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-bottom p {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 900px) {
+      nav {
+        padding: 16px 24px;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 10, 15, 0.97);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        font-size: 1.2rem;
+      }
+
+      .hamburger {
+        display: flex;
+        z-index: 300;
+      }
+
+      .hero {
+        padding: 100px 24px 60px;
+      }
+
+      .stats-band {
+        padding: 40px 24px;
+        gap: 40px;
+      }
+
+      .features {
+        padding: 70px 24px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .how {
+        padding: 70px 24px;
+      }
+
+      .how-inner {
+        gap: 40px;
+      }
+
+      .pricing {
+        padding: 70px 24px;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+      }
+
+      .testimonials {
+        padding: 70px 24px;
+      }
+
+      .testi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-banner {
+        margin: 0 24px 70px;
+        padding: 50px 28px;
+      }
+
+      footer {
+        padding: 50px 24px 32px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 36px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="orb-wrap">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <div class="logo">AURA<span>AI</span></div>
+    <div class="nav-links" id="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="chat.html" class="nav-cta">Start free →</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge"><span class="badge-dot"></span>Powered by advanced LLMs</div>
+      <h1>Think faster.<br>Build smarter.<br><span class="shimmer">Talk to Aura.</span></h1>
+      <p>Your AI-native workspace for writing, research, code, and everything in between — with the speed and privacy
+        you deserve.</p>
+      <div class="hero-buttons">
+        <a href="chat.html" class="btn-hero btn-primary-hero">
+          Start for free
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+        <a href="#features" class="btn-hero btn-ghost-hero">See how it works</a>
+      </div>
+
+      <!-- Preview Card -->
+      <div class="hero-preview">
+        <div class="preview-bar">
+          <div class="preview-dot"></div>
+          <div class="preview-dot"></div>
+          <div class="preview-dot"></div>
+        </div>
+        <div class="preview-body">
+          <div class="preview-msg user">
+            <div class="preview-avatar avatar-user">Y</div>
+            <div class="preview-bubble user">Can you help me write a product launch email for our new app?</div>
+          </div>
+          <div class="preview-msg">
+            <div class="preview-avatar avatar-ai">A</div>
+            <div class="preview-bubble">Absolutely! Here's a compelling launch email. Subject: "Introducing [App Name] —
+              The future of your workflow is here."<br><br>Hi [First Name], we've been working on something big...</div>
+          </div>
+          <div class="preview-msg">
+            <div class="preview-avatar avatar-ai">A</div>
+            <div class="preview-bubble">
+              <div class="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-band">
+    <div class="stat">
+      <div class="stat-num">10M+</div>
+      <div class="stat-label">Messages processed daily</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">98.7%</div>
+      <div class="stat-label">Uptime guaranteed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">150ms</div>
+      <div class="stat-label">Average response time</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">50+</div>
+      <div class="stat-label">Languages supported</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-heading">Everything you need.<br>Nothing you don't.</h2>
+      <p class="section-sub">Aura AI is built for real work — not just demos. From code to creative writing, it adapts
+        to your needs instantly.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(124,111,255,0.15)">🧠</div>
+        <h3>Context-aware reasoning</h3>
+        <p>Aura holds long, nuanced conversations and remembers what matters — so you never have to repeat yourself.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(79,192,208,0.15)">⚡</div>
+        <h3>Streaming responses</h3>
+        <p>No waiting. Aura starts typing instantly, giving you fast answers even for complex multi-step tasks.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(255,111,203,0.15)">🔒</div>
+        <h3>Private by design</h3>
+        <p>Your conversations are encrypted end-to-end. We don't train on your data, ever. Full stop.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(251,191,36,0.15)">💻</div>
+        <h3>Code generation & review</h3>
+        <p>Write, debug, and explain code across 40+ languages with intelligent autocomplete and test generation.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(74,222,128,0.15)">📁</div>
+        <h3>Document intelligence</h3>
+        <p>Upload PDFs, spreadsheets, or notes. Aura reads, summarizes, and answers questions from your files.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(249,115,22,0.15)">🌐</div>
+        <h3>Multi-language support</h3>
+        <p>Communicate fluently in over 50 languages. Aura translates, writes, and reasons natively in each one.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="how-inner">
+      <div class="how-text">
+        <div class="section-label">How it works</div>
+        <h2 class="section-heading">Start a conversation.<br>Watch magic happen.</h2>
+        <p class="section-sub">Getting started takes 30 seconds. No configuration, no prompt engineering required — just
+          ask.</p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h4>Create a free account</h4>
+            <p>Sign up in seconds with your email. No credit card required to get started with our generous free tier.
+            </p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h4>Open a new chat</h4>
+            <p>Start fresh or pick up where you left off. Your history is saved and searchable across all devices.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h4>Ask anything</h4>
+            <p>Write, analyze, code, research, brainstorm — the more context you give, the more powerful the response.
+            </p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h4>Export & integrate</h4>
+            <p>Copy results, export as markdown, or connect Aura to your existing tools via our developer API.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="pricing-header">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-heading">Simple, transparent pricing</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">Start free. Upgrade when you're ready. No surprise fees.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-amount"><sup>$</sup>0<span>/mo</span></div>
+        <div class="price-desc">Perfect for exploring what Aura can do.</div>
+        <ul class="price-features">
+          <li>50 messages per day</li>
+          <li>Access to base model</li>
+          <li>Chat history (7 days)</li>
+          <li class="off">File uploads</li>
+          <li class="off">Priority support</li>
+          <li class="off">API access</li>
+        </ul>
+        <a href="chat.html" class="btn-plan btn-plan-ghost">Get started free</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-tier">Pro</div>
+        <div class="price-amount"><sup>$</sup>19<span>/mo</span></div>
+        <div class="price-desc">For power users who need more, faster.</div>
+        <ul class="price-features">
+          <li>Unlimited messages</li>
+          <li>Advanced model access</li>
+          <li>Unlimited chat history</li>
+          <li>File & PDF uploads</li>
+          <li>Priority support</li>
+          <li class="off">API access</li>
+        </ul>
+        <a href="chat.html" class="btn-plan btn-plan-solid">Start Pro trial</a>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Enterprise</div>
+        <div class="price-amount" style="font-size:2rem;padding-top:8px;">Custom</div>
+        <div class="price-desc">For teams that need control & compliance.</div>
+        <ul class="price-features">
+          <li>Everything in Pro</li>
+          <li>Team management</li>
+          <li>SSO & SAML support</li>
+          <li>Full API access</li>
+          <li>Dedicated support</li>
+          <li>Custom data retention</li>
+        </ul>
+        <a href="mailto:hello@aura.ai" class="btn-plan btn-plan-ghost">Contact sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="testimonials-header">
+      <div class="section-label">Testimonials</div>
+      <h2 class="section-heading">Loved by thinkers & builders</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"I replaced three separate tools with Aura. It writes my copy, reviews my code, and helps
+          me think through product decisions. Nothing else comes close."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#7c6fff,#c084fc)">MR</div>
+          <div>
+            <div class="testi-name">Marcus Reed</div>
+            <div class="testi-role">Founder, Launchpad Studio</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"The streaming speed is unreal. I've tried everything and Aura is by far the most natural
+          conversation experience I've had with any AI tool."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#4fc0d0,#7c6fff)">SP</div>
+          <div>
+            <div class="testi-name">Sofia Patel</div>
+            <div class="testi-role">Senior Engineer, Vercel</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Privacy was my biggest concern switching AI tools. Aura's no-training policy and E2E
+          encryption gave me the confidence to finally use AI for client work."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#ff6fcb,#fbbf24)">JK</div>
+          <div>
+            <div class="testi-name">Jamie Kim</div>
+            <div class="testi-role">Independent Consultant</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <div class="cta-banner">
+    <h2 class="section-heading">Ready to think differently?</h2>
+    <p class="section-sub">Join 500,000+ professionals using Aura every day. Start free — no credit card needed.</p>
+    <div class="hero-buttons">
+      <a href="chat.html" class="btn-hero btn-primary-hero">Launch Aura for free →</a>
+      <a href="#pricing" class="btn-hero btn-ghost-hero">View pricing</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">AURA<span>AI</span></div>
+        <p>The AI workspace built for the way you actually think. Fast, private, and genuinely useful.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="chat.html">Chat</a>
+        <a href="#">API Docs</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Security</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Aura AI. All rights reserved.</p>
+      <p>Made with ♥ for people who think</p>
+    </div>
+  </footer>
+
+  <script>
+    // Hamburger
+    const ham = document.getElementById('hamburger');
+    const links = document.getElementById('nav-links');
+    ham.addEventListener('click', () => {
+      links.classList.toggle('open');
+      const spans = ham.querySelectorAll('span');
+      if (links.classList.contains('open')) {
+        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+      } else {
+        spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+      }
+    });
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      links.classList.remove('open');
+      ham.querySelectorAll('span').forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+    }));
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('main-nav').style.background =
+        window.scrollY > 60 ? 'rgba(10,10,15,0.9)' : 'rgba(10,10,15,0.6)';
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = 1; e.target.style.transform = 'translateY(0)'; } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.feat-card, .price-card, .testi-card, .how-step').forEach(el => {
+      el.style.opacity = 0; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+
+</html>
