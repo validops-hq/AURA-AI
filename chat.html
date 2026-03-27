@@ -575,8 +575,48 @@
       font-size: 0.93rem;
       line-height: 1.7;
       color: rgba(240, 239, 254, 0.9);
-      white-space: pre-wrap;
       word-break: break-word;
+    }
+
+    /* ── MARKDOWN STYLES ── */
+    .msg-text p {
+      margin: 0 0 0.75em;
+    }
+
+    .msg-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .msg-text h1,
+    .msg-text h2,
+    .msg-text h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      margin: 1em 0 0.4em;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .msg-text h1 {
+      font-size: 1.2em;
+    }
+
+    .msg-text h2 {
+      font-size: 1.08em;
+    }
+
+    .msg-text h3 {
+      font-size: 0.98em;
+    }
+
+    .msg-text ul,
+    .msg-text ol {
+      padding-left: 1.4em;
+      margin: 0.4em 0 0.75em;
+    }
+
+    .msg-text li {
+      margin: 0.2em 0;
     }
 
     .msg-text code {
@@ -589,20 +629,84 @@
     }
 
     .msg-text pre {
-      background: var(--ink3);
-      border: 1px solid var(--edge);
+      background: #0d0d1a;
+      border: 1px solid var(--edge2);
       border-radius: 10px;
-      padding: 16px;
       margin: 10px 0;
-      overflow-x: auto;
+      overflow: hidden;
+    }
+
+    .msg-text pre .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--edge);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .msg-text pre .code-copy {
+      background: none;
+      border: 1px solid var(--edge);
+      border-radius: 5px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .msg-text pre .code-copy:hover {
+      background: var(--glow-dim);
+      color: var(--text);
+      border-color: rgba(124, 111, 255, 0.4);
     }
 
     .msg-text pre code {
+      display: block;
       background: none;
       border: none;
-      padding: 0;
-      font-size: 0.88rem;
+      padding: 14px 16px;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+      color: #c9d1d9;
     }
+
+    .msg-text blockquote {
+      border-left: 3px solid var(--glow);
+      margin: 0.5em 0;
+      padding: 4px 0 4px 14px;
+      color: var(--muted2);
+      font-style: italic;
+    }
+
+    .msg-text hr {
+      border: none;
+      border-top: 1px solid var(--edge);
+      margin: 1em 0;
+    }
+
+    .msg-text strong {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .msg-text em {
+      font-style: italic;
+    }
+
+    .msg-text a {
+      color: #a78bfa;
+      text-decoration: underline;
+    }
+
+    /* ── END MARKDOWN STYLES ── */
 
     .msg-img-wrap {
       margin-bottom: 10px;
@@ -1219,21 +1323,17 @@
   <script type="module">
     /* ═══════════════════════════════════════════════════════════
        CONFIG  —  ValidOps Private AI Proxy
-       Collection variables from Postman:
-         base_url = http://localhost:8080
-         api_key  = WhV5N3JuQwzbbi2bpyrvNwqkwbmataI52IrP9jAjhJbJnUaeFkGmaCRACMmy1TBe
     ═══════════════════════════════════════════════════════════ */
     const BASE_URL = 'https://validops-private-ai-application.onrender.com';
     const API_KEY = 'MnXUx8PYBJ2o8P667oSqh24ZO3elM1fVGtyRdReVJcCpMmdfNRqf0ek33EbjrTri';
 
-    // Auth: X-API-Key header (proxy also accepts Authorization: Bearer, both work)
     const AUTH_HEADERS = {
       'Content-Type': 'application/json',
       'X-API-Key': API_KEY
     };
 
     /* ═══════════════════════════════════════════════════════════
-       EXTERNAL IMAGE UPLOAD SERVICE  (unchanged)
+       EXTERNAL IMAGE UPLOAD SERVICE
     ═══════════════════════════════════════════════════════════ */
     const UPLOAD_API = 'https://reconciliation-file-upload-service.hf.space/api/v1/files/bulk-upload';
     const UPLOAD_KEY = 'cOiyYAYAwuJqX1cudfA8cueGEN7nqxQi';
@@ -1244,10 +1344,10 @@
     const STORAGE_KEY = 'aura_chats_v3';
     let chats = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let currentId = null;
-    let currentMessages = [];   // { role, content, imageUrl? }
+    let currentMessages = [];
     let isStreaming = false;
     let abortCtrl = null;
-    let pendingImages = [];   // { localUrl, remoteUrl, name }
+    let pendingImages = [];
 
     /* ═══════════════════════════════════════════════════════════
        DOM
@@ -1358,7 +1458,7 @@
     searchEl.addEventListener('input', e => renderList(e.target.value));
 
     /* ═══════════════════════════════════════════════════════════
-       IMAGE UPLOAD  (external service, unchanged)
+       IMAGE UPLOAD
     ═══════════════════════════════════════════════════════════ */
     attachBtn.onclick = () => fileInput.click();
     fileInput.addEventListener('change', () => { handleFiles([...fileInput.files]); fileInput.value = ''; });
@@ -1484,7 +1584,66 @@
     }
 
     /* ═══════════════════════════════════════════════════════════
-       SEND  —  routes to chat or image endpoint automatically
+       SSE STREAM READER  — shared by both endpoints
+       Fixes:
+         1. Buffer across chunk boundaries (decoder streaming mode)
+         2. [DONE] tokens with embedded newlines → trim() before compare
+         3. Empty delta:{} on finish_reason:stop → skip gracefully
+    ═══════════════════════════════════════════════════════════ */
+    async function readSSEStream(res, onDelta) {
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        // { stream: true } keeps the decoder state for multi-byte chars split across chunks
+        buf += decoder.decode(value, { stream: true });
+
+        // Split on newlines but keep the last incomplete line in the buffer
+        const lines = buf.split('\n');
+        buf = lines.pop(); // last element may be incomplete
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data:')) continue;
+
+          const dataStr = trimmed.slice(5).trim(); // everything after "data:"
+
+          // ── FIX 1: trim() so "[DONE\n]" or "[DONE ]" still match ──
+          if (dataStr === '[DONE]') return;
+
+          try {
+            const json = JSON.parse(dataStr);
+
+            // ── FIX 2: delta may be {} (finish_reason:stop chunk) — guard with ?. ──
+            const delta = json.choices?.[0]?.delta?.content;
+            if (typeof delta === 'string' && delta.length > 0) {
+              onDelta(delta);
+            }
+          } catch (_) {
+            // Partial / non-JSON line — ignore and wait for more bytes
+          }
+        }
+      }
+
+      // Flush any remaining bytes in the buffer
+      if (buf.trim().startsWith('data:')) {
+        const dataStr = buf.trim().slice(5).trim();
+        if (dataStr && dataStr !== '[DONE]') {
+          try {
+            const json = JSON.parse(dataStr);
+            const delta = json.choices?.[0]?.delta?.content;
+            if (typeof delta === 'string' && delta.length > 0) onDelta(delta);
+          } catch (_) { }
+        }
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SEND
     ═══════════════════════════════════════════════════════════ */
     async function send() {
       const text = inputEl.value.trim();
@@ -1494,7 +1653,6 @@
       welcome.style.display = 'none';
       msgList.classList.add('visible');
 
-      // Use first uploaded image (proxy /v1/image takes a single image_url)
       const imageUrl = hasImgs ? pendingImages[0].remoteUrl : null;
 
       currentMessages.push({ role: 'user', content: text, imageUrl });
@@ -1505,7 +1663,6 @@
       setSending(true);
       showTyping();
 
-      // Route: image attached → POST /v1/image, text only → POST /v1/chat
       if (imageUrl) {
         await callImageEndpoint(text, imageUrl);
       } else {
@@ -1548,33 +1705,11 @@
           throw new Error(err?.message || `HTTP ${res.status}`);
         }
 
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-            const dataStr = trimmed.replace('data: ', '');
-            if (dataStr === '[DONE]') break;
-
-            try {
-              const json = JSON.parse(dataStr);
-              const delta = json.choices[0]?.delta?.content || '';
-              fullContent += delta;
-
-              textEl.innerHTML = fmt(fullContent) + cursor;
-              scrollDown();
-            } catch (e) { }
-          }
-        }
+        await readSSEStream(res, delta => {
+          fullContent += delta;
+          textEl.innerHTML = fmt(fullContent) + cursor;
+          scrollDown();
+        });
 
         textEl.innerHTML = fmt(fullContent);
         currentMessages.push({ role: 'assistant', content: fullContent });
@@ -1627,33 +1762,11 @@
           throw new Error(err?.message || `HTTP ${res.status}`);
         }
 
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-            const dataStr = trimmed.replace('data: ', '');
-            if (dataStr === '[DONE]') break;
-
-            try {
-              const json = JSON.parse(dataStr);
-              const delta = json.choices[0]?.delta?.content || '';
-              fullContent += delta;
-
-              textEl.innerHTML = fmt(fullContent) + cursor;
-              scrollDown();
-            } catch (e) { }
-          }
-        }
+        await readSSEStream(res, delta => {
+          fullContent += delta;
+          textEl.innerHTML = fmt(fullContent) + cursor;
+          scrollDown();
+        });
 
         textEl.innerHTML = fmt(fullContent);
         currentMessages.push({ role: 'assistant', content: fullContent });
@@ -1755,23 +1868,98 @@
     function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('visible'); }
 
     const scrollDown = () => msgWrap.scrollTop = msgWrap.scrollHeight;
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     function esc(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-    function fmt(t) {
-      if (!t) return '';
-      let s = esc(t);
-      s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) => `<pre><code>${c.trim()}</code></pre>`);
+
+    /* ═══════════════════════════════════════════════════════════
+       FMT  —  Markdown → safe HTML
+       Handles: fenced code blocks (with language label + copy btn),
+       inline code, bold, italic, h1-h3, ul/ol lists, blockquotes,
+       horizontal rules, line breaks.
+       Does NOT use innerHTML on raw input — escapes first, then
+       replaces escaped markers.
+    ═══════════════════════════════════════════════════════════ */
+    function fmt(raw) {
+      if (!raw) return '';
+
+      // ── 1. Extract fenced code blocks BEFORE escaping so backticks aren't mangled ──
+      const codeBlocks = [];
+      let s = raw.replace(/```([^\n`]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+        const label = lang.trim() || 'code';
+        const escaped = esc(code.trimEnd());
+        const idx = codeBlocks.length;
+        const copyId = `cb${Date.now()}${idx}`;
+        codeBlocks.push(
+          `<pre><div class="code-header"><span>${esc(label)}</span>` +
+          `<button class="code-copy" onclick="copyCode('${copyId}')">Copy</button></div>` +
+          `<code id="${copyId}">${escaped}</code></pre>`
+        );
+        return `\x00CB${idx}\x00`; // placeholder
+      });
+
+      // ── 2. Escape the rest ──
+      s = esc(s);
+
+      // ── 3. Inline code (after escaping so we don't double-escape) ──
       s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // ── 4. Bold / italic ──
+      s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
       s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      s = s.replace(/^#{1,3} (.+)$/gm, '<strong>$1</strong>');
-      s = s.replace(/^[-*] (.+)$/gm, '• $1');
+      s = s.replace(/_(.+?)_/g, '<em>$1</em>');
+
+      // ── 5. Headings ──
+      s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      s = s.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+      // ── 6. Blockquotes ──
+      s = s.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+      // ── 7. Horizontal rules ──
+      s = s.replace(/^(---|\*\*\*|___)\s*$/gm, '<hr>');
+
+      // ── 8. Unordered lists ──
+      s = s.replace(/((?:^[ \t]*[-*+] .+\n?)+)/gm, match => {
+        const items = match.trim().split('\n').map(l => `<li>${l.replace(/^[ \t]*[-*+] /, '')}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      });
+
+      // ── 9. Ordered lists ──
+      s = s.replace(/((?:^[ \t]*\d+\. .+\n?)+)/gm, match => {
+        const items = match.trim().split('\n').map(l => `<li>${l.replace(/^[ \t]*\d+\. /, '')}</li>`).join('');
+        return `<ol>${items}</ol>`;
+      });
+
+      // ── 10. Paragraphs: wrap runs of plain text lines in <p> ──
+      // Convert remaining newlines to <br> inside non-block contexts
+      s = s.replace(/\n{2,}/g, '\n\x00PARA\x00\n');
       s = s.replace(/\n/g, '<br>');
+      s = s.replace(/\x00PARA\x00/g, '</p><p>');
+      s = `<p>${s}</p>`;
+      // Clean up empty paragraphs and paragraphs wrapping block elements
+      s = s.replace(/<p>\s*<\/p>/g, '');
+      s = s.replace(/<p>(<(?:h[123]|ul|ol|hr|blockquote|pre)[^>]*>)/g, '$1');
+      s = s.replace(/(<\/(?:h[123]|ul|ol|hr|blockquote|pre)>)<\/p>/g, '$1');
+
+      // ── 11. Restore code blocks ──
+      s = s.replace(/\x00CB(\d+)\x00/g, (_, i) => codeBlocks[parseInt(i)]);
+
       return s;
     }
+
+    window.copyCode = id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = el.closest('pre')?.querySelector('.code-copy');
+        if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500); }
+      });
+    };
+
     function ago(ts) {
       const s = Math.floor((Date.now() - ts) / 1000);
       if (s < 60) return 'just now';
